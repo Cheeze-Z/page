@@ -21,12 +21,13 @@
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
+            z-index: 1;
         }
 
-        /* 散落贴纸装饰，底层，不遮挡内容 */
+        /* 散落贴纸装饰：最顶层，不捕获鼠标事件 */
         .decor-sticker {
             position: absolute;
-            z-index: 0;
+            z-index: 9999;
             width: 112px;
             pointer-events: none;
         }
@@ -66,7 +67,7 @@
             padding: 40px 30px;
             box-shadow: 0 8px 30px rgba(37, 99, 235, 0.1);
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
         h1 {
             font-size: 28px;
@@ -160,7 +161,7 @@
             align-items: center;
             justify-content: center;
             padding:20px;
-            z-index:999;
+            z-index:10000;
             opacity:0;
             visibility:hidden;
             transition: 0.22s;
@@ -260,7 +261,6 @@
     </style>
 </head>
 <body>
-    <!-- 纯英文图片路径，本地+GitHub Pages都兼容 -->
     <img class="decor-sticker sticker-1" src="assets/sticker1.png">
     <img class="decor-sticker sticker-2" src="assets/sticker2.png">
     <img class="decor-sticker sticker-3" src="assets/sticker3.png">
@@ -396,7 +396,7 @@
     </div>
 
     <script>
-        // =========这里填入你的APK下载https链接=========
+        // =========填入APK的HTTPS下载链接=========
         const APK_URL = "替换成你的真实APK下载链接";
 
         const triggerModal = document.getElementById('triggerModal');
