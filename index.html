@@ -27,36 +27,42 @@
         .decor-sticker {
             position: absolute;
             z-index: 9999;
-            width: 112px;
             pointer-events: none;
         }
-        /* 左上：进一步上移，彻底避开卡片标题 */
+        /* 左上贴纸：修改 top:0px */
         .sticker-1 {
-            top: -12px;
+            top: -3px;
             left: -14px;
             transform: rotate(-6deg);
+            width: 112px;
         }
         /* 右上 */
         .sticker-2 {
             top: 80px;
             right: -10px;
             transform: rotate(7deg);
+            width: 112px;
         }
-        /* 左下 */
+        /* 左下贴纸：缩小 + 下移 */
         .sticker-3 {
-            bottom: 130px;
+            bottom: 100px;
             left: -8px;
             transform: rotate(4deg);
+            width: 90px;
         }
         /* 右下 */
         .sticker-4 {
             bottom: 170px;
             right: -14px;
             transform: rotate(-9deg);
+            width: 112px;
         }
         @media(max-width:420px){
             .decor-sticker{
                 width:82px;
+            }
+            .sticker-3{
+                width:70px;
             }
         }
         .card {
@@ -149,7 +155,7 @@
             font-size:13px;
             color:#9ca3af;
         }
-        /* 弹窗 */
+        /* 弹窗：修正居中布局，保证水平垂直居中 */
         .modal-mask {
             position: fixed;
             inset:0;
@@ -175,6 +181,7 @@
             padding:28px 26px;
             max-height: 85vh;
             overflow-y: auto;
+            margin: 0 auto;
         }
         .modal-title {
             font-size:20px;
@@ -254,6 +261,48 @@
             resize:vertical;
             margin-top:8px;
         }
+        /* 提交成功弹窗 */
+        .success-modal{
+            position: fixed;
+            inset:0;
+            background:rgba(0,0,0,0.45);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:10001;
+            opacity:0;
+            visibility:hidden;
+            transition:0.22s;
+            padding:20px;
+        }
+        .success-modal.show{
+            opacity:1;
+            visibility:visible;
+        }
+        .success-box{
+            background:#fff;
+            border-radius:20px;
+            padding:30px 24px;
+            text-align:center;
+            max-width:360px;
+            width:100%;
+        }
+        .success-text{
+            font-size:18px;
+            color:#1f2937;
+            margin-bottom:24px;
+            line-height:1.6;
+        }
+        .success-close-btn{
+            width:100%;
+            padding:14px 0;
+            border-radius:12px;
+            border:none;
+            background:#2563eb;
+            color:#fff;
+            font-size:16px;
+            cursor:pointer;
+        }
     </style>
 </head>
 <body>
@@ -297,7 +346,7 @@
     <div class="modal-mask" id="feedbackModal">
         <div class="modal-box">
             <div class="modal-title">口语Go 测试体验评分</div>
-            <div class="modal-text">请对本次内测体验进行 1‑5 分评价（5分最优）</div>
+            <div class="modal-text">请对本次内测体验进行 1‑5 分评价（5分最优），所有评分项为必填</div>
             <div class="score-item">
                 <label class="score-label">1. 模拟考试评分准确度</label>
                 <div class="score-radio">
@@ -372,6 +421,13 @@
             </div>
         </div>
     </div>
+    <!-- 提交成功弹窗 -->
+    <div class="success-modal" id="successModal">
+        <div class="success-box">
+            <div class="success-text">✅ 反馈提交成功<br>感谢您宝贵的建议！</div>
+            <button class="success-close-btn" id="successClose">关闭</button>
+        </div>
+    </div>
     <script>
         // =========填入APK的HTTPS下载链接=========
         const APK_URL = "替换成你的真实APK下载链接";
@@ -401,33 +457,53 @@
         const feedbackModal = document.getElementById('feedbackModal');
         const openFeedback = document.getElementById('openFeedback');
         const closeFeedback = document.getElementById('closeFeedback');
+        const successModal = document.getElementById('successModal');
+        const successClose = document.getElementById('successClose');
+
         openFeedback.onclick = ()=> feedbackModal.classList.add('show');
         closeFeedback.onclick = ()=> feedbackModal.classList.remove('show');
         feedbackModal.onclick = (e)=>{
             if(e.target === feedbackModal) feedbackModal.classList.remove('show');
         }
+        // 成功弹窗关闭事件：关闭后关闭网页
+        successClose.onclick = ()=>{
+            successModal.classList.remove('show');
+            window.close();
+        }
 
         const submitFeedback = document.getElementById("submitFeedback");
 
         submitFeedback.onclick = async ()=>{
-            const s1 = document.querySelector('input[name=s1]:checked')?.value || "未评分";
-            const s2 = document.querySelector('input[name=s2]:checked')?.value || "未评分";
-            const s3 = document.querySelector('input[name=s3]:checked')?.value || "未评分";
-            const s4 = document.querySelector('input[name=s4]:checked')?.value || "未评分";
-            const s5 = document.querySelector('input[name=s5]:checked')?.value || "未评分";
-            const s6 = document.querySelector('input[name=s6]:checked')?.value || "未评分";
+            // ===== 新增：6道评分必选校验 =====
+            const s1 = document.querySelector('input[name=s1]:checked');
+            const s2 = document.querySelector('input[name=s2]:checked');
+            const s3 = document.querySelector('input[name=s3]:checked');
+            const s4 = document.querySelector('input[name=s4]:checked');
+            const s5 = document.querySelector('input[name=s5]:checked');
+            const s6 = document.querySelector('input[name=s6]:checked');
+            if(!s1 || !s2 || !s3 || !s4 || !s5 || !s6){
+                alert("⚠️ 请完成全部6项评分选择后再提交！");
+                return;
+            }
+            const s1_val = s1.value;
+            const s2_val = s2.value;
+            const s3_val = s3.value;
+            const s4_val = s4.value;
+            const s5_val = s5.value;
+            const s6_val = s6.value;
+
             const bugText = document.getElementById('bugText').value.trim();
             const suggestText = document.getElementById('suggestText').value.trim();
             const time = new Date().toLocaleString();
 
             // 组装表单参数，不是JSON
             const params = new URLSearchParams();
-            params.append("s1_score", s1);
-            params.append("s2_score", s2);
-            params.append("s3_score", s3);
-            params.append("s4_score", s4);
-            params.append("s5_score", s5);
-            params.append("s6_score", s6);
+            params.append("s1_score", s1_val);
+            params.append("s2_score", s2_val);
+            params.append("s3_score", s3_val);
+            params.append("s4_score", s4_val);
+            params.append("s5_score", s5_val);
+            params.append("s6_score", s6_val);
             params.append("bug_description", bugText);
             params.append("suggestion", suggestText);
             params.append("submit_time", time);
@@ -444,19 +520,20 @@
                     body: params
                 });
                 if(!resp.ok) throw new Error("提交失败");
-                alert("✅反馈提交成功！");
-                // 这里调用你自己页面的重置表单函数
+                // 提交成功：关闭问卷弹窗，弹出成功提示
+                feedbackModal.classList.remove('show');
+                successModal.classList.add('show');
                 resetForm();
             }catch(err){
                 console.error(err);
                 // 失败降级复制到剪贴板
                 const result = `【口语Go内测反馈】${time}
-1.模拟考试评分准确度：${s1}分
-2.评分分差合理性：${s2}分
-3.录音识别准确度：${s3}分
-4.语法建议准确度：${s4}分
-5.交互设计体验：${s5}分
-6.APP使用流畅度：${s6}分
+1.模拟考试评分准确度：${s1_val}分
+2.评分分差合理性：${s2_val}分
+3.录音识别准确度：${s3_val}分
+4.语法建议准确度：${s4_val}分
+5.交互设计体验：${s5_val}分
+6.APP使用流畅度：${s6_val}分
 ——————
 【Bug问题描述】
 ${bugText || "无"}
@@ -472,7 +549,6 @@ ${suggestText || "无"}`;
         };
 
         function resetForm(){
-            feedbackModal.classList.remove('show');
             document.querySelectorAll('input[type=radio]').forEach(el=>el.checked=false);
             document.getElementById('bugText').value = "";
             document.getElementById('suggestText').value = "";
