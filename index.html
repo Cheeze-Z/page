@@ -2,7 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 修复：禁止缩放，严格匹配设备宽度 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>口语Go｜v1.0.0测试版APK下载</title>
     <meta name="description" content="口语Go测试版APK下载，AI雅思口语练习安卓内测包，安装指引">
     <style>
@@ -17,7 +18,7 @@
             color: #1f2937;
             max-width: 640px;
             margin: 0 auto;
-            padding: 52px 20px;
+            padding: 40px 16px;
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
@@ -28,11 +29,12 @@
             position: absolute;
             z-index: 9999;
             pointer-events: none;
+            max-width: 22vw; /* 小屏幕自动按视口百分比缩小，不会溢出 */
         }
         /* 左上贴纸：top:2px left:-10px */
         .sticker-1 {
-            top: 2px;
-            left: -10px;
+            top: 5px;
+            left: -5px;
             transform: rotate(-6deg);
             width: 112px;
         }
@@ -68,36 +70,36 @@
         .card {
             background: #ffffff;
             border-radius: 22px;
-            padding: 40px 30px;
+            padding: 32px 20px;
             box-shadow: 0 8px 30px rgba(37, 99, 235, 0.1);
             position: relative;
             z-index: 2;
         }
         h1 {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 600;
             margin-bottom: 8px;
         }
         .version-text {
             color: #6b7280;
             font-size: 15px;
-            margin-bottom: 26px;
+            margin-bottom: 20px;
         }
         .alert-warning {
             background: #fffbeb;
             border-left: 4px solid #f59e0b;
-            padding: 16px 18px;
+            padding: 14px 16px;
             border-radius: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
             line-height: 1.65;
             font-size:15px;
         }
         .alert-wechat {
             background: #eff6ff;
             border-left:4px solid #2563eb;
-            padding:16px 18px;
+            padding:14px 16px;
             border-radius:12px;
-            margin-bottom:32px;
+            margin-bottom:24px;
             line-height:1.65;
             font-size:15px;
         }
@@ -107,10 +109,10 @@
             background: linear-gradient(90deg,#2563eb,#3b78f5);
             color:#ffffff;
             text-align:center;
-            padding:18px 0;
+            padding:16px 0;
             border-radius:14px;
             border: none;
-            font-size:18px;
+            font-size:17px;
             font-weight:500;
             cursor: pointer;
             transition: all 0.24s ease;
@@ -129,30 +131,30 @@
             padding:14px 0;
             border-radius:14px;
             border: none;
-            font-size:17px;
+            font-size:16px;
             font-weight:500;
             cursor: pointer;
             transition: all 0.24s ease;
-            margin-top:16px;
+            margin-top:14px;
         }
         .feedback-btn:active {
             transform: scale(0.97);
         }
         .file-desc {
             text-align:center;
-            margin-top:14px;
-            font-size:14px;
+            margin-top:12px;
+            font-size:13px;
             color:#6b7280;
         }
         .info-area {
-            margin-top:36px;
+            margin-top:28px;
             line-height:1.8;
-            font-size:15px;
+            font-size:14px;
         }
         .footer-note {
-            margin-top:42px;
+            margin-top:32px;
             text-align:center;
-            font-size:13px;
+            font-size:12px;
             color:#9ca3af;
         }
         /* 弹窗：修正居中布局，保证水平垂直居中 */
@@ -163,7 +165,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding:20px;
+            padding:12px;
             z-index:10000;
             opacity:0;
             visibility:hidden;
@@ -178,54 +180,57 @@
             width:100%;
             max-width:420px;
             border-radius:20px;
-            padding:28px 26px;
+            padding:24px 20px;
             max-height: 85vh;
             overflow-y: auto;
             margin: 0 auto;
-            margin-left: -3px;
+        }
+        /* 只调整评分问卷弹窗左右偏移，放在评分问卷注释上方 */
+        #feedbackModal .modal-box {
+            margin-left: -15px;
         }
         .modal-title {
-            font-size:20px;
+            font-size:19px;
             font-weight:600;
-            margin-bottom:12px;
+            margin-bottom:10px;
         }
         .modal-text {
-            font-size:15px;
+            font-size:14px;
             line-height:1.7;
             color:#4b5563;
-            margin-bottom:24px;
+            margin-bottom:20px;
         }
         .modal-buttons {
             display:flex;
-            gap:12px;
-            margin-top:24px;
+            gap:10px;
+            margin-top:20px;
         }
         .modal-btn-cancel {
             flex:1;
-            padding:14px 0;
+            padding:12px 0;
             border-radius:12px;
             border:1px solid #d1d5db;
             background:#ffffff;
-            font-size:16px;
+            font-size:15px;
             cursor:pointer;
         }
         .modal-btn-confirm {
             flex:1;
-            padding:14px 0;
+            padding:12px 0;
             border-radius:12px;
             border:none;
             background:#2563eb;
             color:white;
-            font-size:16px;
+            font-size:15px;
             cursor:pointer;
         }
         /* 评分问卷 */
         .score-item {
-            margin-bottom:20px;
+            margin-bottom:18px;
         }
         .score-label {
-            font-size:15px;
-            margin-bottom:10px;
+            font-size:14px;
+            margin-bottom:8px;
             display:block;
             color:#1f2937;
         }
@@ -237,12 +242,12 @@
         .score-radio {
             display:flex;
             justify-content: center;
-            gap:10px;
+            gap:8px;
         }
         .score-radio label {
-            width:36px;
-            height:36px;
-            line-height:36px;
+            width:34px;
+            height:34px;
+            line-height:34px;
             text-align:center;
             border-radius:50%;
             border:1px solid #d1d5db;
@@ -262,11 +267,11 @@
             width:100%;
             border:1px solid #e5e7eb;
             border-radius:12px;
-            padding:14px;
-            font-size:15px;
-            min-height:80px;
+            padding:12px;
+            font-size:14px;
+            min-height:72px;
             resize:vertical;
-            margin-top:8px;
+            margin-top:6px;
         }
         /* 提交成功弹窗 */
         .success-modal{
@@ -280,7 +285,7 @@
             opacity:0;
             visibility:hidden;
             transition:0.22s;
-            padding:20px;
+            padding:12px;
         }
         .success-modal.show{
             opacity:1;
@@ -289,25 +294,25 @@
         .success-box{
             background:#fff;
             border-radius:20px;
-            padding:30px 24px;
+            padding:24px 20px;
             text-align:center;
-            max-width:360px;
+            max-width:340px;
             width:100%;
         }
         .success-text{
-            font-size:18px;
+            font-size:17px;
             color:#1f2937;
-            margin-bottom:24px;
+            margin-bottom:20px;
             line-height:1.6;
         }
         .success-close-btn{
             width:100%;
-            padding:14px 0;
+            padding:12px 0;
             border-radius:12px;
             border:none;
             background:#2563eb;
             color:#fff;
-            font-size:16px;
+            font-size:15px;
             cursor:pointer;
         }
     </style>
