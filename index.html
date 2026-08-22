@@ -23,7 +23,6 @@
             overflow-x: hidden;
             z-index: 1;
         }
-
         /* 散落贴纸装饰：最顶层，不捕获鼠标事件 */
         .decor-sticker {
             position: absolute;
@@ -31,9 +30,9 @@
             width: 112px;
             pointer-events: none;
         }
-        /* 左上 */
+        /* 左上：上移，避开卡片标题区域，不再遮挡文字 */
         .sticker-1 {
-            top: 30px;
+            top: 4px;
             left: -14px;
             transform: rotate(-6deg);
         }
@@ -60,7 +59,6 @@
                 width:82px;
             }
         }
-
         .card {
             background: #ffffff;
             border-radius: 22px;
@@ -151,7 +149,6 @@
             font-size:13px;
             color:#9ca3af;
         }
-
         /* 弹窗 */
         .modal-mask {
             position: fixed;
@@ -214,7 +211,6 @@
             font-size:16px;
             cursor:pointer;
         }
-
         /* 评分问卷 */
         .score-item {
             margin-bottom:20px;
@@ -265,33 +261,25 @@
     <img class="decor-sticker sticker-2" src="assets/sticker2.png">
     <img class="decor-sticker sticker-3" src="assets/sticker3.png">
     <img class="decor-sticker sticker-4" src="assets/sticker4.png">
-
     <div class="card">
         <h1>口语Go 测试版</h1>
         <div class="version-text">v1.0.0 Build20260819</div>
-
         <div class="alert-warning">
             ⚠️本版本为内部测试版，存在未修复bug，测试数据不保证永久保存，请勿用于正式学习。
         </div>
-
         <div class="alert-wechat">
             💡微信打开无法直接下载APK，请点击右上角「在浏览器打开」
         </div>
-
         <button class="download-button" id="triggerModal">下载口语Go v1.0.0 APK</button>
         <div class="file-desc">speakinggo_v1.0.0_20260819.apk</div>
-
         <button class="feedback-btn" id="openFeedback">📝 提交测试体验反馈</button>
-
         <div class="info-area">
             <p>💡安装包体积较大，建议在Wi‑Fi环境下载。遇到闪退、功能异常可以提交bug反馈。</p>
         </div>
-
         <div class="footer-note">
             © 2026 口语Go · 内部测试版本
         </div>
     </div>
-
     <!-- 下载弹窗 -->
     <div class="modal-mask" id="modalMask">
         <div class="modal-box">
@@ -305,13 +293,11 @@
             </div>
         </div>
     </div>
-
     <!-- 反馈问卷弹窗 -->
     <div class="modal-mask" id="feedbackModal">
         <div class="modal-box">
             <div class="modal-title">口语Go 测试体验评分</div>
             <div class="modal-text">请对本次内测体验进行 1‑5 分评价（5分最优）</div>
-
             <div class="score-item">
                 <label class="score-label">1. 模拟考试评分准确度</label>
                 <div class="score-radio">
@@ -322,7 +308,6 @@
                     <input type="radio" name="s1" value="5" id="s1-5"><label for="s1-5">5</label>
                 </div>
             </div>
-
             <div class="score-item">
                 <label class="score-label">2. 考试评分分差合理性</label>
                 <div class="score-radio">
@@ -333,7 +318,6 @@
                     <input type="radio" name="s2" value="5" id="s2-5"><label for="s2-5">5</label>
                 </div>
             </div>
-
             <div class="score-item">
                 <label class="score-label">3. 录音识别准确度</label>
                 <div class="score-radio">
@@ -344,7 +328,6 @@
                     <input type="radio" name="s3" value="5" id="s3-5"><label for="s3-5">5</label>
                 </div>
             </div>
-
             <div class="score-item">
                 <label class="score-label">4. 语法纠错建议准确度</label>
                 <div class="score-radio">
@@ -355,7 +338,6 @@
                     <input type="radio" name="s4" value="5" id="s4-5"><label for="s4-5">5</label>
                 </div>
             </div>
-
             <div class="score-item">
                 <label class="score-label">5. APP交互设计体验</label>
                 <div class="score-radio">
@@ -366,7 +348,6 @@
                     <input type="radio" name="s5" value="5" id="s5-5"><label for="s5-5">5</label>
                 </div>
             </div>
-
             <div class="score-item">
                 <label class="score-label">6. APP使用流畅度</label>
                 <div class="score-radio">
@@ -377,33 +358,27 @@
                     <input type="radio" name="s6" value="5" id="s6-5"><label for="s6-5">5</label>
                 </div>
             </div>
-
             <div class="score-item">
                 <label class="score-label">🐛 Bug问题描述（闪退、卡顿、报错、异常）</label>
                 <textarea id="bugText" placeholder="遇到的崩溃、无响应、识别异常等问题..."></textarea>
             </div>
-
             <div class="score-item">
                 <label class="score-label">💡 功能优化建议</label>
                 <textarea id="suggestText" placeholder="交互改进、新增功能、体验想法等..."></textarea>
             </div>
-
             <div class="modal-buttons">
                 <button class="modal-btn-cancel" id="closeFeedback">取消</button>
                 <button class="modal-btn-confirm" id="submitFeedback">提交反馈</button>
             </div>
         </div>
     </div>
-
     <script>
         // =========填入APK的HTTPS下载链接=========
         const APK_URL = "替换成你的真实APK下载链接";
-
         const triggerModal = document.getElementById('triggerModal');
         const modalMask = document.getElementById('modalMask');
         const modalCancel = document.getElementById('modalCancel');
         const modalDownload = document.getElementById('modalDownload');
-
         triggerModal.addEventListener('click', ()=>{
             modalMask.classList.add('show');
         });
@@ -423,18 +398,15 @@
             a.remove();
             closeModal();
         })
-
         const feedbackModal = document.getElementById('feedbackModal');
         const openFeedback = document.getElementById('openFeedback');
         const closeFeedback = document.getElementById('closeFeedback');
         const submitFeedback = document.getElementById('submitFeedback');
-
         openFeedback.onclick = ()=> feedbackModal.classList.add('show');
         closeFeedback.onclick = ()=> feedbackModal.classList.remove('show');
         feedbackModal.onclick = (e)=>{
             if(e.target === feedbackModal) feedbackModal.classList.remove('show');
         }
-
         submitFeedback.onclick = ()=>{
             const s1 = document.querySelector('input[name=s1]:checked')?.value || "未评分";
             const s2 = document.querySelector('input[name=s2]:checked')?.value || "未评分";
@@ -445,7 +417,6 @@
             const bugText = document.getElementById('bugText').value.trim();
             const suggestText = document.getElementById('suggestText').value.trim();
             const time = new Date().toLocaleString();
-
             const result = `【口语Go内测反馈】${time}
 1. 模拟考试评分准确度：${s1}分
 2. 评分分差合理性：${s2}分
@@ -459,7 +430,6 @@ ${bugText || "无"}
 ——————
 【功能优化建议】
 ${suggestText || "无"}`;
-
             if(navigator.clipboard && window.isSecureContext){
                 navigator.clipboard.writeText(result).then(()=>{
                     alert("✅反馈已复制！直接粘贴保存");
@@ -473,7 +443,6 @@ ${suggestText || "无"}`;
                 resetForm();
             }
         }
-
         function resetForm(){
             feedbackModal.classList.remove('show');
             document.querySelectorAll('input[type=radio]').forEach(el=>el.checked=false);
