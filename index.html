@@ -31,10 +31,10 @@
             pointer-events: none;
             max-width: 22vw; /* 小屏幕自动按视口百分比缩小，不会溢出 */
         }
-        /* 左上贴纸：top:2px left:-10px */
+        /* 左上 */
         .sticker-1 {
-            top: 5px;
-            left: -5px;
+            top: 0px;
+            left: -8px;
             transform: rotate(-6deg);
             width: 112px;
         }
@@ -45,16 +45,16 @@
             transform: rotate(7deg);
             width: 112px;
         }
-        /* 左下贴纸：缩小 + 下移 */
+        /* 左下*/
         .sticker-3 {
-            bottom: 60px;
+            bottom: 100px;
             left: -8px;
             transform: rotate(4deg);
             width: 90px;
         }
         /* 右下 */
         .sticker-4 {
-            bottom: 90px;
+            bottom: 170px;
             right: -14px;
             transform: rotate(-9deg);
             width: 112px;
@@ -63,8 +63,14 @@
             .decor-sticker{
                 width:82px;
             }
+            .sticker-1 {
+                top: 5px;
+                left: -5px;
             .sticker-3{
-                width:70px;
+                bottom: 90px
+            }
+            .sticker-4 {
+                bottom: 100px;
             }
         }
         .card {
