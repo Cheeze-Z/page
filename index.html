@@ -29,10 +29,10 @@
             z-index: 9999;
             pointer-events: none;
         }
-        /* 左上贴纸：修改 top:0px */
+        /* 左上贴纸：top:2px left:-10px */
         .sticker-1 {
             top: 2px;
-            left: -14px;
+            left: -10px;
             transform: rotate(-6deg);
             width: 112px;
         }
@@ -224,13 +224,19 @@
         }
         .score-label {
             font-size:15px;
-            color:#1f2937;
             margin-bottom:10px;
             display:block;
+            color:#1f2937;
         }
+        /* 仅校验失败时才标红 */
+        .score-label.error{
+            color:#ef4444;
+        }
+        /* 评分单选组整体居中 */
         .score-radio {
             display:flex;
-            justify-content: space-between;
+            justify-content: center;
+            gap:10px;
         }
         .score-radio label {
             width:36px;
@@ -346,9 +352,9 @@
     <div class="modal-mask" id="feedbackModal">
         <div class="modal-box">
             <div class="modal-title">口语Go 测试体验评分</div>
-            <div class="modal-text">请对本次内测体验进行 1‑5 分评价（5分最优），所有评分项为必填</div>
+            <div class="modal-text">请完成全部6项评分后提交</div>
             <div class="score-item">
-                <label class="score-label">1. 模拟考试评分准确度</label>
+                <label class="score-label" data-name="s1">1. 模拟考试评分准确度</label>
                 <div class="score-radio">
                     <input type="radio" name="s1" value="1" id="s1-1"><label for="s1-1">1</label>
                     <input type="radio" name="s1" value="2" id="s1-2"><label for="s1-2">2</label>
@@ -358,7 +364,7 @@
                 </div>
             </div>
             <div class="score-item">
-                <label class="score-label">2. 考试评分分差合理性</label>
+                <label class="score-label" data-name="s2">2. 考试评分分差合理性</label>
                 <div class="score-radio">
                     <input type="radio" name="s2" value="1" id="s2-1"><label for="s2-1">1</label>
                     <input type="radio" name="s2" value="2" id="s2-2"><label for="s2-2">2</label>
@@ -368,7 +374,7 @@
                 </div>
             </div>
             <div class="score-item">
-                <label class="score-label">3. 录音识别准确度</label>
+                <label class="score-label" data-name="s3">3. 录音识别准确度</label>
                 <div class="score-radio">
                     <input type="radio" name="s3" value="1" id="s3-1"><label for="s3-1">1</label>
                     <input type="radio" name="s3" value="2" id="s3-2"><label for="s3-2">2</label>
@@ -378,7 +384,7 @@
                 </div>
             </div>
             <div class="score-item">
-                <label class="score-label">4. 语法纠错建议准确度</label>
+                <label class="score-label" data-name="s4">4. 语法纠错建议准确度</label>
                 <div class="score-radio">
                     <input type="radio" name="s4" value="1" id="s4-1"><label for="s4-1">1</label>
                     <input type="radio" name="s4" value="2" id="s4-2"><label for="s4-2">2</label>
@@ -388,7 +394,7 @@
                 </div>
             </div>
             <div class="score-item">
-                <label class="score-label">5. APP交互设计体验</label>
+                <label class="score-label" data-name="s5">5. APP交互设计体验</label>
                 <div class="score-radio">
                     <input type="radio" name="s5" value="1" id="s5-1"><label for="s5-1">1</label>
                     <input type="radio" name="s5" value="2" id="s5-2"><label for="s5-2">2</label>
@@ -398,7 +404,7 @@
                 </div>
             </div>
             <div class="score-item">
-                <label class="score-label">6. APP使用流畅度</label>
+                <label class="score-label" data-name="s6">6. APP使用流畅度</label>
                 <div class="score-radio">
                     <input type="radio" name="s6" value="1" id="s6-1"><label for="s6-1">1</label>
                     <input type="radio" name="s6" value="2" id="s6-2"><label for="s6-2">2</label>
@@ -461,7 +467,9 @@
         const successClose = document.getElementById('successClose');
 
         openFeedback.onclick = ()=> feedbackModal.classList.add('show');
-        closeFeedback.onclick = ()=> feedbackModal.classList.remove('show');
+        closeFeedback.onclick = ()=> {
+            feedbackModal.classList.remove('show');
+        };
         feedbackModal.onclick = (e)=>{
             if(e.target === feedbackModal) feedbackModal.classList.remove('show');
         }
@@ -471,26 +479,50 @@
             window.close();
         }
 
+        const radioGroups = ['s1','s2','s3','s4','s5','s6'];
+        // 选择选项时移除红色错误标记
+        radioGroups.forEach(name=>{
+            const radios = document.querySelectorAll(`input[name="${name}"]`);
+            const labelEl = document.querySelector(`label[data-name="${name}"]`);
+            radios.forEach(r=>{
+                r.addEventListener('change',()=>{
+                    labelEl.classList.remove('error');
+                })
+            })
+        })
+
         const submitFeedback = document.getElementById("submitFeedback");
 
         submitFeedback.onclick = async ()=>{
-            // ===== 新增：6道评分必选校验 =====
-            const s1 = document.querySelector('input[name=s1]:checked');
-            const s2 = document.querySelector('input[name=s2]:checked');
-            const s3 = document.querySelector('input[name=s3]:checked');
-            const s4 = document.querySelector('input[name=s4]:checked');
-            const s5 = document.querySelector('input[name=s5]:checked');
-            const s6 = document.querySelector('input[name=s6]:checked');
-            if(!s1 || !s2 || !s3 || !s4 || !s5 || !s6){
-                alert("⚠️ 请完成全部6项评分选择后再提交！");
+            // 先清除全部旧的红色错误
+            radioGroups.forEach(name=>{
+                const labelEl = document.querySelector(`label[data-name="${name}"]`);
+                labelEl.classList.remove('error');
+            })
+
+            let unfinished = [];
+            function getScore(name){
+                const checked = document.querySelector(`input[name="${name}"]:checked`);
+                const labelEl = document.querySelector(`label[data-name="${name}"]`);
+                if(!checked){
+                    unfinished.push(labelEl.innerText);
+                    labelEl.classList.add('error');
+                    return "";
+                }
+                return checked.value;
+            }
+            const s1_val = getScore('s1');
+            const s2_val = getScore('s2');
+            const s3_val = getScore('s3');
+            const s4_val = getScore('s4');
+            const s5_val = getScore('s5');
+            const s6_val = getScore('s6');
+
+            // 拦截提交，有未完成项直接return
+            if(unfinished.length > 0){
+                alert(`⚠️请完成所有评分项！\n未完成：${unfinished.join("、")}`);
                 return;
             }
-            const s1_val = s1.value;
-            const s2_val = s2.value;
-            const s3_val = s3.value;
-            const s4_val = s4.value;
-            const s5_val = s5.value;
-            const s6_val = s6.value;
 
             const bugText = document.getElementById('bugText').value.trim();
             const suggestText = document.getElementById('suggestText').value.trim();
@@ -552,6 +584,11 @@ ${suggestText || "无"}`;
             document.querySelectorAll('input[type=radio]').forEach(el=>el.checked=false);
             document.getElementById('bugText').value = "";
             document.getElementById('suggestText').value = "";
+            //重置全部，去掉红色
+            radioGroups.forEach(name=>{
+                const labelEl = document.querySelector(`label[data-name="${name}"]`);
+                labelEl.classList.remove('error');
+            })
         }
     </script>
 </body>
