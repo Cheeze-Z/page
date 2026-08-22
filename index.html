@@ -30,9 +30,9 @@
             width: 112px;
             pointer-events: none;
         }
-        /* 左上：上移，避开卡片标题区域，不再遮挡文字 */
+        /* 左上：进一步上移，彻底避开卡片标题 */
         .sticker-1 {
-            top: 4px;
+            top: -12px;
             left: -14px;
             transform: rotate(-6deg);
         }
@@ -401,13 +401,15 @@
         const feedbackModal = document.getElementById('feedbackModal');
         const openFeedback = document.getElementById('openFeedback');
         const closeFeedback = document.getElementById('closeFeedback');
-        const submitFeedback = document.getElementById('submitFeedback');
         openFeedback.onclick = ()=> feedbackModal.classList.add('show');
         closeFeedback.onclick = ()=> feedbackModal.classList.remove('show');
         feedbackModal.onclick = (e)=>{
             if(e.target === feedbackModal) feedbackModal.classList.remove('show');
         }
-        submitFeedback.onclick = ()=>{
+
+        const submitFeedback = document.getElementById("submitFeedback");
+
+        submitFeedback.onclick = async ()=>{
             const s1 = document.querySelector('input[name=s1]:checked')?.value || "未评分";
             const s2 = document.querySelector('input[name=s2]:checked')?.value || "未评分";
             const s3 = document.querySelector('input[name=s3]:checked')?.value || "未评分";
@@ -417,32 +419,58 @@
             const bugText = document.getElementById('bugText').value.trim();
             const suggestText = document.getElementById('suggestText').value.trim();
             const time = new Date().toLocaleString();
-            const result = `【口语Go内测反馈】${time}
-1. 模拟考试评分准确度：${s1}分
-2. 评分分差合理性：${s2}分
-3. 录音识别准确度：${s3}分
-4. 语法建议准确度：${s4}分
-5. 交互设计体验：${s5}分
-6. APP使用流畅度：${s6}分
+
+            // 组装表单参数，不是JSON
+            const params = new URLSearchParams();
+            params.append("s1_score", s1);
+            params.append("s2_score", s2);
+            params.append("s3_score", s3);
+            params.append("s4_score", s4);
+            params.append("s5_score", s5);
+            params.append("s6_score", s6);
+            params.append("bug_description", bugText);
+            params.append("suggestion", suggestText);
+            params.append("submit_time", time);
+
+            const FORMSPREE_ENDPOINT = "https://formspree.io/f/mrpzdkvg";
+
+            try {
+                const resp = await fetch(FORMSPREE_ENDPOINT, {
+                    method: "POST",
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: params
+                });
+                if(!resp.ok) throw new Error("提交失败");
+                alert("✅反馈提交成功！");
+                // 这里调用你自己页面的重置表单函数
+                resetForm();
+            }catch(err){
+                console.error(err);
+                // 失败降级复制到剪贴板
+                const result = `【口语Go内测反馈】${time}
+1.模拟考试评分准确度：${s1}分
+2.评分分差合理性：${s2}分
+3.录音识别准确度：${s3}分
+4.语法建议准确度：${s4}分
+5.交互设计体验：${s5}分
+6.APP使用流畅度：${s6}分
 ——————
 【Bug问题描述】
 ${bugText || "无"}
 ——————
 【功能优化建议】
 ${suggestText || "无"}`;
-            if(navigator.clipboard && window.isSecureContext){
-                navigator.clipboard.writeText(result).then(()=>{
-                    alert("✅反馈已复制！直接粘贴保存");
-                    resetForm();
-                }).catch(()=>{
-                    alert("📋反馈内容：\n\n"+result);
-                    resetForm();
-                })
-            }else{
-                alert("📋反馈内容：\n\n"+result);
+                if(navigator.clipboard && window.isSecureContext){
+                    navigator.clipboard.writeText(result);
+                }
+                alert("⚠️服务器提交失败，反馈已复制剪贴板，请手动保存");
                 resetForm();
             }
-        }
+        };
+
         function resetForm(){
             feedbackModal.classList.remove('show');
             document.querySelectorAll('input[type=radio]').forEach(el=>el.checked=false);
